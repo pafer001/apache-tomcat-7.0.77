@@ -17,18 +17,32 @@
 
 package org.apache.el.lang;
 
-import org.apache.el.MethodExpressionImpl;
-import org.apache.el.MethodExpressionLiteral;
-import org.apache.el.ValueExpressionImpl;
-import org.apache.el.parser.*;
-import org.apache.el.util.ConcurrentCache;
-import org.apache.el.util.MessageFactory;
-
-import javax.el.*;
 import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
+import javax.el.ELContext;
+import javax.el.ELException;
+import javax.el.FunctionMapper;
+import javax.el.MethodExpression;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
+
+import org.apache.el.MethodExpressionImpl;
+import org.apache.el.MethodExpressionLiteral;
+import org.apache.el.ValueExpressionImpl;
+import org.apache.el.parser.AstDeferredExpression;
+import org.apache.el.parser.AstDynamicExpression;
+import org.apache.el.parser.AstFunction;
+import org.apache.el.parser.AstIdentifier;
+import org.apache.el.parser.AstLiteralExpression;
+import org.apache.el.parser.AstValue;
+import org.apache.el.parser.ELParser;
+import org.apache.el.parser.Node;
+import org.apache.el.parser.NodeVisitor;
+import org.apache.el.util.ConcurrentCache;
+import org.apache.el.util.MessageFactory;
 
 /**
  * @author Jacob Hookom [jacob@hookom.net]
@@ -38,8 +52,6 @@ public final class ExpressionBuilder implements NodeVisitor {
     private static final int CACHE_SIZE;
     private static final String CACHE_SIZE_PROP =
             "org.apache.el.ExpressionBuilder.CACHE_SIZE";
-    private static final ConcurrentCache<String, Node> cache =
-            new ConcurrentCache<String, Node>(CACHE_SIZE);
 
     static {
         String cacheSizeStr;
@@ -57,6 +69,9 @@ public final class ExpressionBuilder implements NodeVisitor {
         }
         CACHE_SIZE = Integer.parseInt(cacheSizeStr);
     }
+
+    private static final ConcurrentCache<String, Node> cache =
+            new ConcurrentCache<String, Node>(CACHE_SIZE);
 
     private FunctionMapper fnMapper;
 

@@ -44,18 +44,14 @@ public class SmapStratum {
         private int outputLineIncrement = 1;
         private boolean lineFileIDSet = false;
 
-        /**
-         * Sets InputStartLine.
-         */
+        /** Sets InputStartLine. */
         public void setInputStartLine(int inputStartLine) {
             if (inputStartLine < 0)
                 throw new IllegalArgumentException("" + inputStartLine);
             this.inputStartLine = inputStartLine;
         }
 
-        /**
-         * Sets OutputStartLine.
-         */
+        /** Sets OutputStartLine. */
         public void setOutputStartLine(int outputStartLine) {
             if (outputStartLine < 0)
                 throw new IllegalArgumentException("" + outputStartLine);
@@ -75,18 +71,14 @@ public class SmapStratum {
             this.lineFileIDSet = true;
         }
 
-        /**
-         * Sets InputLineCount.
-         */
+        /** Sets InputLineCount. */
         public void setInputLineCount(int inputLineCount) {
             if (inputLineCount < 0)
                 throw new IllegalArgumentException("" + inputLineCount);
             this.inputLineCount = inputLineCount;
         }
 
-        /**
-         * Sets OutputLineIncrement.
-         */
+        /** Sets OutputLineIncrement. */
         public void setOutputLineIncrement(int outputLineIncrement) {
             if (outputLineIncrement < 0)
                 throw new IllegalArgumentException("" + outputLineIncrement);
@@ -185,7 +177,7 @@ public class SmapStratum {
             System.out.print(li.toString());
         }
 */
-        //Incorporate each LineInfo into the previous LineInfo's 
+        //Incorporate each LineInfo into the previous LineInfo's
         //outputLineIncrement, if possible
         int i = 0;
         while (i < lineData.size() - 1) {
@@ -236,20 +228,20 @@ public class SmapStratum {
      * not for programmer convenience.  Could always add utility methods
      * later.)
      *
-     * @param inputStartLine      starting line in the source file
-     *                            (SMAP <tt>InputStartLine</tt>)
-     * @param inputFileName       the filepath (or name) from which the input comes
-     *                            (yields SMAP <tt>LineFileID</tt>)  Use unqualified names
-     *                            carefully, and only when they uniquely identify a file.
-     * @param inputLineCount      the number of lines in the input to map
-     *                            (SMAP <tt>LineFileCount</tt>)
-     * @param outputStartLine     starting line in the output file
-     *                            (SMAP <tt>OutputStartLine</tt>)
+     * @param inputStartLine starting line in the source file
+     *        (SMAP <tt>InputStartLine</tt>)
+     * @param inputFileName the filepath (or name) from which the input comes
+     *        (yields SMAP <tt>LineFileID</tt>)  Use unqualified names
+     *        carefully, and only when they uniquely identify a file.
+     * @param inputLineCount the number of lines in the input to map
+     *        (SMAP <tt>LineFileCount</tt>)
+     * @param outputStartLine starting line in the output file
+     *        (SMAP <tt>OutputStartLine</tt>)
      * @param outputLineIncrement number of output lines to map to each
-     *                            input line (SMAP <tt>OutputLineIncrement</tt>).  <i>Given the
-     *                            fact that the name starts with "output", I continuously have
-     *                            the subconscious urge to call this field
-     *                            <tt>OutputLineExcrement</tt>.</i>
+     *        input line (SMAP <tt>OutputLineIncrement</tt>).  <i>Given the
+     *        fact that the name starts with "output", I continuously have
+     *        the subconscious urge to call this field
+     *        <tt>OutputLineExcrement</tt>.</i>
      */
     public void addLineData(
             int inputStartLine,
@@ -263,7 +255,7 @@ public class SmapStratum {
             throw new IllegalArgumentException(
                     "inputFileName: " + inputFileName);
 
-        //Jasper incorrectly SMAPs certain Nodes, giving them an 
+        //Jasper incorrectly SMAPs certain Nodes, giving them an
         //outputStartLine of 0.  This can cause a fatal error in
         //optimizeLineSection, making it impossible for Jasper to
         //compile the JSP.  Until we can fix the underlying
@@ -338,93 +330,7 @@ public class SmapStratum {
         return out.toString();
     }
 
-    /**
-     * Represents a single LineSection in an SMAP, associated with
-     * a particular stratum.
-     */
-    public static class LineInfo {
-        private int inputStartLine = -1;
-        private int outputStartLine = -1;
-        private int lineFileID = 0;
-        private int inputLineCount = 1;
-        private int outputLineIncrement = 1;
-        private boolean lineFileIDSet = false;
-
-        /**
-         * Sets InputStartLine.
-         */
-        public void setInputStartLine(int inputStartLine) {
-            if (inputStartLine < 0)
-                throw new IllegalArgumentException("" + inputStartLine);
-            this.inputStartLine = inputStartLine;
-        }
-
-        /**
-         * Sets OutputStartLine.
-         */
-        public void setOutputStartLine(int outputStartLine) {
-            if (outputStartLine < 0)
-                throw new IllegalArgumentException("" + outputStartLine);
-            this.outputStartLine = outputStartLine;
-        }
-
-        /**
-         * Sets lineFileID.  Should be called only when different from
-         * that of prior LineInfo object (in any given context) or 0
-         * if the current LineInfo has no (logical) predecessor.
-         * <tt>LineInfo</tt> will print this file number no matter what.
-         */
-        public void setLineFileID(int lineFileID) {
-            if (lineFileID < 0)
-                throw new IllegalArgumentException("" + lineFileID);
-            this.lineFileID = lineFileID;
-            this.lineFileIDSet = true;
-        }
-
-        /**
-         * Sets InputLineCount.
-         */
-        public void setInputLineCount(int inputLineCount) {
-            if (inputLineCount < 0)
-                throw new IllegalArgumentException("" + inputLineCount);
-            this.inputLineCount = inputLineCount;
-        }
-
-        /**
-         * Sets OutputLineIncrement.
-         */
-        public void setOutputLineIncrement(int outputLineIncrement) {
-            if (outputLineIncrement < 0)
-                throw new IllegalArgumentException("" + outputLineIncrement);
-            this.outputLineIncrement = outputLineIncrement;
-        }
-
-        /**
-         * Retrieves the current LineInfo as a String, print all values
-         * only when appropriate (but LineInfoID if and only if it's been
-         * specified, as its necessity is sensitive to context).
-         */
-        public String getString() {
-            if (inputStartLine == -1 || outputStartLine == -1)
-                throw new IllegalStateException();
-            StringBuilder out = new StringBuilder();
-            out.append(inputStartLine);
-            if (lineFileIDSet)
-                out.append("#" + lineFileID);
-            if (inputLineCount != 1)
-                out.append("," + inputLineCount);
-            out.append(":" + outputStartLine);
-            if (outputLineIncrement != 1)
-                out.append("," + outputLineIncrement);
-            out.append('\n');
-            return out.toString();
-        }
-
-        @Override
-        public String toString() {
-            return getString();
-        }
-    }    @Override
+    @Override
     public String toString() {
         return getString();
     }
